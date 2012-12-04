@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Cone test</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+      body {
+        font-family: Monospace;
+        background-color: white;
+        color: #black;
+        margin: 0px;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+
+  <body>
+    <script src="http://mrdoob.github.com/three.js/build/three.min.js"></script>
+
+    <script>
+
+      var container, stats;
+
+      var camera, scene, renderer;
+
+      var mouseX = 0, mouseY = 0;
+
+      var windowHalfX = window.innerWidth / 2;
+      var windowHalfY = window.innerHeight / 2;
+
+      function addShape() {
+        var coneGeometry = new THREE.CylinderGeometry(0, 150, 400, 100, 100, false);
+        var cone = new THREE.Mesh(coneGeometry, new THREE.MeshLambertMaterial( { color: 0x0000ff } ) );
+        cone.rotation = new THREE.Vector3(Math.PI / 2, 0, 0);
+        cone.overdraw = true;
+        scene.add(cone);
+        
+        var planeGeometry = new THREE.PlaneGeometry(500, 500, 100, 100);
+        var plane = new THREE.Mesh(planeGeometry, new THREE.MeshLambertMaterial( {color: 0x00ff00, opacity: 0.4 }) );
+        plane.rotation = new THREE.Vector3(- Math.PI / 2, 0, 0);
+        scene.add(plane);
+      }
+      
+      function init() {
+
+        container = document.createElement( 'div' );
+        document.body.appendChild( container );
+
+        camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 7000 );
+        camera.position.z = 700;
+
+        // scene
+
+        scene = new THREE.Scene();
+
+        var ambient = new THREE.AmbientLight( 0x101030 );
+        scene.add( ambient );
+
+        var directionalLight = new THREE.DirectionalLight( 0xffeedd );
+        directionalLight.position.set(0, 1, 1 ).normalize();
+        scene.add( directionalLight );
+        
+        addShape();
+        
+        // renderer
+        renderer = new THREE.WebGLRenderer({antialias: true});
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        container.appendChild( renderer.domElement );
+
+        document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+
+        window.addEventListener( 'resize', onWindowResize, false );
+
+      }
+
+      function onWindowResize() {
+
+        windowHalfX = window.innerWidth / 2;
+        windowHalfY = window.innerHeight / 2;
+
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize( window.innerWidth, window.innerHeight );
+
+      }
+
+      function onDocumentMouseMove( event ) {
+
+        mouseX = ( event.clientX - windowHalfX ) / 2;
+        mouseY = ( event.clientY - windowHalfY ) / 2;
+
+      }
+
+      function animate() {
+
+        requestAnimationFrame( animate );
+        render();
+
+      }
+
+      function render() {
+
+        camera.position.x += ( 9 * mouseX - camera.position.x );
+        camera.position.y += ( - 9 * mouseY - camera.position.y );
+        camera.lookAt( scene.position );
+
+        renderer.render( scene, camera );
+
+      }
+      
+      init();
+      animate();
+
+    </script>
+
+  </body>
+</html>
